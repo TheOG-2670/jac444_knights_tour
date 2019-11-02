@@ -1,3 +1,5 @@
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -11,10 +13,12 @@ import javafx.scene.text.Text;
 * */
 public class Controller
 {
-    //'board' will keep count of the current move number of the knight
+    //'board' will store all moves made
     private int[][] board = new int[8][8];
+    //keeps track of moves
     private int currentMoveNumber = 0;
 
+    //sets/resets board squares to 0
     public void initializeBoard()
     {
         //rows
@@ -29,9 +33,8 @@ public class Controller
         }
     }
 
-    public void nextValidMoves(int currentRow, int currentColumn)
+    public void embedMoveNumber(int currentRow, int currentColumn)
     {
-
         //text node for move counter
         Text positionNumber = new Text();
         positionNumber.setFont(new Font("Calibri", 20));
@@ -40,7 +43,14 @@ public class Controller
         //add text node into board square
         positionNumber.setText(board[currentRow][currentColumn] + "");
         Main.getBoardSquare(Main.getBoard(), currentRow, currentColumn).getChildren().add(positionNumber);
+    }
 
+
+    public void nextValidMoves(int currentRow, int currentColumn)
+    {
+        int badMoveCount=0;
+
+        embedMoveNumber(currentRow, currentColumn);
 
         //cycle through all positions on horizontal and vertical axes for available moves
         for (int i = 0; i < 8; i++)
@@ -51,7 +61,7 @@ public class Controller
 
             //copy of current row and column to find all available positions
             int currentRowCopy = currentRow,
-                currentColumnCopy = currentColumn;
+                    currentColumnCopy = currentColumn;
 
             //calculate next available positions to move based on current position
             currentRowCopy += verticalMove[i];
@@ -70,25 +80,33 @@ public class Controller
                 Main.getBoardSquare(Main.getBoard(), currentRowCopy, currentColumnCopy).setStyle("-fx-background-color:green");
 
                 //set click event for available positions
-                Main.getBoardSquare(Main.getBoard(), currentRowCopy, currentColumnCopy).setOnMouseClicked(mouseEvent -> {
-                    //move to new positions only if it's green
-                    if (Main.getBoardSquare(Main.getBoard(), finalCurrentRowCopy, finalCurrentColumnCopy).getStyle().contains("green"))
-                    {
-                        //clear all highlighted squares
-                        clearHighlightedSquares();
-                        //increment move counter
-                        currentMoveNumber++;
-                        //assign counter to square
-                        board[finalCurrentRowCopy][finalCurrentColumnCopy] = currentMoveNumber;
+                Main.getBoardSquare(Main.getBoard(), currentRowCopy, currentColumnCopy).setOnMouseClicked(
+                        mouseEvent -> {
+                        //move to new positions only if it's green
+                        if (Main.getBoardSquare(Main.getBoard(), finalCurrentRowCopy, finalCurrentColumnCopy).getStyle().contains("green"))
+                        {
+                            //clear all highlighted squares
+                            clearHighlightedSquares();
+                            //increment move counter
+                            currentMoveNumber++;
+                            //assign counter to square
+                            board[finalCurrentRowCopy][finalCurrentColumnCopy] = currentMoveNumber;
 
-                        //recursively call for next available positions
-                        nextValidMoves(finalCurrentRowCopy, finalCurrentColumnCopy);
-                    }
+                            //recursively call for next available positions
+                            nextValidMoves(finalCurrentRowCopy, finalCurrentColumnCopy);
+                        }
 
                 });
             }
+            else
+            {
+                badMoveCount++;
+            }
+        }
 
-
+        if (badMoveCount == 8)
+        {
+            new Alert(Alert.AlertType.ERROR, "No more valid moves left!", ButtonType.CLOSE).show();
         }
     }
 
