@@ -9,5 +9,11 @@
 .idea/modules.xml
 .idea/uiDesigner.xml
 .idea/vcs.xml
+<<<<<<< HEAD
 .idea/workspace.xml
 bonus workshop.iml
+=======
+bonus workshop.iml
+out/production/bonus workshop/Controller.class
+out/production/bonus workshop/Main.class
+>>>>>>> dc895d5 (fixed valid positions)
